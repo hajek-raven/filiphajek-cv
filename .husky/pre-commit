@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if printf '%s\n' "$STAGED" | grep -qE '^(src/|public/|scripts/generate-cv-pdf)'; then
+  PDF_FORCE_PRODUCTION=1 pnpm generate:pdf
+  git add public/cv.pdf
+fi

@@ -24,11 +24,16 @@ import {
   FetchUrlToolStatus,
   isFetchUrlToolPart,
 } from "@/app/_components/fetch-url-tool-status";
+import {
+  CHAT_LIMIT_COPY,
+  CHAT_LIMITS,
+  countUserMessages,
+} from "@/lib/chat-limits";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 const suggestions = [
   "Shrň mi jaké má Filip technologické zkušenosti.",
@@ -39,31 +44,61 @@ const chatGutter = "px-8 max-md:px-4";
 
 export function AiChatPanel() {
   const [input, setInput] = useState("");
+  const [limitNotice, setLimitNotice] = useState<string | null>(null);
   const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
+    onError: (error) => {
+      setLimitNotice(error.message);
+    },
   });
+
+  const userMessageCount = useMemo(
+    () => countUserMessages(messages),
+    [messages]
+  );
+  const atConversationLimit =
+    userMessageCount >= CHAT_LIMITS.maxUserMessages;
+  const inputTooLong = input.length > CHAT_LIMITS.maxMessageChars;
+  const canSend =
+    !atConversationLimit &&
+    !inputTooLong &&
+    status !== "submitted" &&
+    status !== "streaming";
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
       const text = message.text.trim();
-      if (!text || status === "submitted" || status === "streaming") {
+      if (!text || !canSend) {
+        if (atConversationLimit) {
+          setLimitNotice(CHAT_LIMIT_COPY.conversationLimit);
+        } else if (text.length > CHAT_LIMITS.maxMessageChars) {
+          setLimitNotice(CHAT_LIMIT_COPY.messageTooLong);
+        }
         return;
       }
 
+      setLimitNotice(null);
       sendMessage({ text });
       setInput("");
     },
-    [sendMessage, status]
+    [atConversationLimit, canSend, sendMessage]
   );
 
   const handleSuggestion = useCallback(
     (suggestion: string) => {
+      if (!canSend || atConversationLimit) {
+        setLimitNotice(CHAT_LIMIT_COPY.conversationLimit);
+        return;
+      }
+
+      setLimitNotice(null);
       sendMessage({ text: suggestion });
     },
-    [sendMessage]
+    [atConversationLimit, canSend, sendMessage]
   );
 
   const hasMessages = messages.length > 0;
+  const remainingMessages = CHAT_LIMITS.maxUserMessages - userMessageCount;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -186,17 +221,42 @@ export function AiChatPanel() {
           chatGutter
         )}
       >
-        <Suggestions className="gap-1.5 [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]">
-          {suggestions.map((suggestion) => (
-            <Suggestion
-              className="h-7 shrink-0 rounded-full border-border/80 bg-background/95 px-3 text-xs leading-none font-normal whitespace-nowrap shadow-[0_2px_10px_rgba(1,18,25,0.08),0_1px_2px_rgba(1,18,25,0.04)] backdrop-blur-sm transition-[box-shadow,background-color,border-color,color] hover:border-[color-mix(in_srgb,var(--ring)_45%,var(--border))] hover:bg-background hover:text-[var(--accent)] hover:shadow-[0_4px_16px_rgba(1,18,25,0.12)]"
-              key={suggestion}
-              onClick={handleSuggestion}
-              size="sm"
-              suggestion={suggestion}
-            />
-          ))}
-        </Suggestions>
+        {!atConversationLimit ? (
+          <Suggestions className="gap-1.5 [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]">
+            {suggestions.map((suggestion) => (
+              <Suggestion
+                className="h-7 shrink-0 rounded-full border-border/80 bg-background/95 px-3 text-xs leading-none font-normal whitespace-nowrap shadow-[0_2px_10px_rgba(1,18,25,0.08),0_1px_2px_rgba(1,18,25,0.04)] backdrop-blur-sm transition-[box-shadow,background-color,border-color,color] hover:border-[color-mix(in_srgb,var(--ring)_45%,var(--border))] hover:bg-background hover:text-[var(--accent)] hover:shadow-[0_4px_16px_rgba(1,18,25,0.12)]"
+                disabled={!canSend}
+                key={suggestion}
+                onClick={handleSuggestion}
+                size="sm"
+                suggestion={suggestion}
+              />
+            ))}
+          </Suggestions>
+        ) : null}
+
+        {limitNotice || atConversationLimit || inputTooLong ? (
+          <p
+            className="text-[0.75rem] leading-snug text-muted-foreground"
+            role="status"
+          >
+            {limitNotice ??
+              (atConversationLimit
+                ? CHAT_LIMIT_COPY.conversationLimit
+                : CHAT_LIMIT_COPY.messageTooLong)}
+          </p>
+        ) : remainingMessages <= 5 ? (
+          <p className="text-[0.75rem] leading-snug text-muted-foreground">
+            Zbývá {remainingMessages}{" "}
+            {remainingMessages === 1
+              ? "zpráva"
+              : remainingMessages >= 2 && remainingMessages <= 4
+                ? "zprávy"
+                : "zpráv"}
+            .
+          </p>
+        ) : null}
 
         <PromptInput
           className="w-full [&_[data-slot=input-group]]:relative [&_[data-slot=input-group]]:overflow-visible [&_[data-slot=input-group]]:rounded-[10px] [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-background [&_[data-slot=input-group]]:shadow-[0_1px_2px_rgba(1,18,25,0.04),inset_0_1px_0_rgba(255,255,255,0.7)] [&_[data-slot=input-group]]:transition-[border-color,box-shadow] [&_[data-slot=input-group]]:duration-150 [&_[data-slot=input-group]:focus-within]:border-[color-mix(in_srgb,var(--ring)_55%,var(--border))] [&_[data-slot=input-group]:focus-within]:shadow-[0_0_0_3px_color-mix(in_srgb,var(--ring)_18%,transparent),0_1px_2px_rgba(1,18,25,0.04)]"
@@ -205,14 +265,28 @@ export function AiChatPanel() {
           <PromptInputBody>
             <PromptInputTextarea
               className="max-h-36 min-h-[4.25rem] resize-none px-3.5 pt-2.5 pb-11 text-[0.8125rem] leading-[1.55] max-md:min-h-16 max-md:px-3 max-md:pt-2.5 max-md:pr-12 max-md:pb-2.5"
-              onChange={(event) => setInput(event.target.value)}
-              placeholder="Napište otázku…"
+              disabled={atConversationLimit}
+              maxLength={CHAT_LIMITS.maxMessageChars}
+              onChange={(event) => {
+                setInput(event.target.value);
+                if (limitNotice && event.target.value.length <= CHAT_LIMITS.maxMessageChars) {
+                  setLimitNotice(null);
+                }
+              }}
+              placeholder={
+                atConversationLimit
+                  ? "Limit zpráv dosažen"
+                  : "Napište otázku…"
+              }
               value={input}
             />
           </PromptInputBody>
           <PromptInputFooter className="absolute right-2.5 bottom-2.5 w-auto border-none p-0 max-md:right-2 max-md:bottom-2 [&_button]:size-8 [&_button]:rounded-[8px]">
             <PromptInputSubmit
-              disabled={!input.trim() && status === "ready"}
+              disabled={
+                (atConversationLimit || !input.trim() || inputTooLong) &&
+                status === "ready"
+              }
               onStop={stop}
               status={status}
             />

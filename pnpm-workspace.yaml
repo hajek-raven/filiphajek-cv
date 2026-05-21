@@ -1,0 +1,12 @@
+packages:
+  - .
+
+allowBuilds:
+  puppeteer: true
+  sharp: true
+  msw: false
+  unrs-resolver: false
+minimumReleaseAgeExclude:
+  - '@ai-sdk/gateway@3.0.118'
+  - '@ai-sdk/react@3.0.190'
+  - ai@6.0.188

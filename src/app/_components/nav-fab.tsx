@@ -14,9 +14,9 @@ export function NavFab() {
   return (
     <div className="fixed top-10 right-4 z-50 flex items-center gap-2 max-md:top-4 max-md:right-4 print:hidden">
       {!isChat ? (
-        <button className={navFabClass} onClick={() => window.print()} type="button">
-          Tisk
-        </button>
+        <Link className={navFabClass} href="/cv.pdf" download prefetch={false}>
+          PDF
+        </Link>
       ) : null}
       <Link
         className={cn(
