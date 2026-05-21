@@ -1,13 +1,13 @@
 export const cvMeta = {
-  title: "Filip Hájek — Lead Frontend Engineer",
+  title: "Filip Hájek — Lead Fullstack Engineer",
   description:
-    "Lead Frontend Engineer · TypeScript · React. CV Filipa Hájka.",
+    "Lead Fullstack Engineer · TypeScript · React. CV Filipa Hájka.",
   email: "hajek.raven@gmail.com",
   linkedIn: "https://www.linkedin.com/in/hajekfi",
   linkedInLabel: "linkedin.com/in/hajekfi",
   location: "Praha",
-  eyebrow: "Praha · Lead Frontend",
-  subtitle: "Lead Frontend Engineer  ·  TypeScript  ·  React",
+  eyebrow: "Praha · Lead Fullstack",
+  subtitle: "Lead Fullstack Engineer  ·  TypeScript  ·  React",
   footerYear: 2026,
 } as const;
 
