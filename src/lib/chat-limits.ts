@@ -31,7 +31,9 @@ export function getLastUserMessageText(messages: UIMessage[]): string {
     }
 
     return message.parts
-      .filter((part): part is { type: "text"; text: string } => part.type === "text")
+      .filter(
+        (part): part is { type: "text"; text: string } => part.type === "text",
+      )
       .map((part) => part.text)
       .join("");
   }
@@ -56,9 +58,7 @@ export function chatLimitErrorResponse(
 ): Response {
   const copy = getChatLimitCopy(locale);
   const message =
-    code === "MESSAGE_TOO_LONG"
-      ? copy.messageTooLong
-      : copy.conversationLimit;
+    code === "MESSAGE_TOO_LONG" ? copy.messageTooLong : copy.conversationLimit;
 
   return Response.json({ error: code, message }, { status: 429 });
 }

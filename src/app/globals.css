@@ -80,22 +80,22 @@
 @keyframes nav-try-me-wiggle {
   0%,
   100% {
-    transform: translateX(-50%) rotate(-2deg);
+    transform: rotate(-2deg);
   }
 
   50% {
-    transform: translateX(-50%) rotate(2deg) translateY(-1px);
+    transform: rotate(2deg) translateY(-1px);
   }
 }
 
 @keyframes nav-try-me-draw {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scaleX(-1);
   }
 
   50% {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scaleX(-1);
   }
 }
 
@@ -121,7 +121,7 @@
 
 .nav-try-me__arrow {
   position: absolute;
-  left: 0;
+  right: 0;
   height: 100%;
   overflow: visible;
   animation: nav-try-me-draw 2.8s ease-in-out infinite;
@@ -129,8 +129,8 @@
 
 .nav-try-me__text {
   position: absolute;
-  left: 50%;
-  bottom: -1rem;
+  right: 3rem;
+  bottom: 0;
   font-family: var(--sans);
   font-size: 0.9375rem;
   font-style: italic;
@@ -138,7 +138,7 @@
   letter-spacing: -0.02em;
   line-height: 1;
   white-space: nowrap;
-  transform: translateX(-50%) rotate(-30deg);
+  transform: translateX(-100%) rotate(-30deg);
   transform-origin: center bottom;
   animation: nav-try-me-wiggle 2.8s ease-in-out infinite;
 }

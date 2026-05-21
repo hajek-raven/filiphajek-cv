@@ -119,7 +119,12 @@ export function NavFab() {
         </div>
 
         {!isChat ? (
-          <Link className={navFabClass} href="/cv.pdf" download prefetch={false}>
+          <Link
+            className={navFabClass}
+            href={locale === "en" ? "/cv_en.pdf" : "/cv.pdf"}
+            download
+            prefetch={false}
+          >
             {ui.pdf}
           </Link>
         ) : null}

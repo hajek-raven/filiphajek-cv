@@ -5,7 +5,11 @@ import { fileURLToPath } from "node:url";
 import puppeteer from "puppeteer";
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const PDF_PATH = path.join(ROOT, "public", "cv.pdf");
+const PUBLIC_DIR = path.join(ROOT, "public");
+const PDF_TARGETS = [
+  { route: "/", filename: "cv.pdf" },
+  { route: "/en", filename: "cv_en.pdf" },
+];
 const PORT = Number(process.env.PDF_GEN_PORT ?? 3459);
 const DEFAULT_SOURCES = [
   process.env.PDF_SOURCE_URL,
@@ -104,8 +108,25 @@ async function startProductionServer() {
   return { baseUrl, serverProcess };
 }
 
-async function generatePdf() {
-  await mkdir(path.dirname(PDF_PATH), { recursive: true });
+async function renderPdf(page, baseUrl, route, outputPath) {
+  await page.goto(`${baseUrl}${route}`, {
+    waitUntil: "networkidle0",
+    timeout: PAGE_TIMEOUT_MS,
+  });
+  await page.evaluate(() => document.fonts.ready);
+  await page.emulateMediaType("print");
+  await page.pdf({
+    path: outputPath,
+    format: "A4",
+    printBackground: true,
+    preferCSSPageSize: true,
+    margin: { top: 0, right: 0, bottom: 0, left: 0 },
+  });
+  console.log(`Wrote ${outputPath}`);
+}
+
+async function generatePdfs() {
+  await mkdir(PUBLIC_DIR, { recursive: true });
 
   const { baseUrl, serverProcess } = await resolveBaseUrl();
   const browser = await puppeteer.launch({
@@ -115,28 +136,17 @@ async function generatePdf() {
 
   try {
     const page = await browser.newPage();
-    await page.goto(`${baseUrl}/`, {
-      waitUntil: "networkidle0",
-      timeout: PAGE_TIMEOUT_MS,
-    });
-    await page.evaluate(() => document.fonts.ready);
-    await page.emulateMediaType("print");
-    await page.pdf({
-      path: PDF_PATH,
-      format: "A4",
-      printBackground: true,
-      preferCSSPageSize: true,
-      margin: { top: 0, right: 0, bottom: 0, left: 0 },
-    });
+
+    for (const { route, filename } of PDF_TARGETS) {
+      await renderPdf(page, baseUrl, route, path.join(PUBLIC_DIR, filename));
+    }
   } finally {
     await browser.close();
     serverProcess?.kill("SIGTERM");
   }
-
-  console.log(`Wrote ${PDF_PATH}`);
 }
 
-generatePdf().catch((error) => {
+generatePdfs().catch((error) => {
   console.error(error);
   process.exit(1);
 });
