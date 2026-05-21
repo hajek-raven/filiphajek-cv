@@ -1,7 +1,14 @@
+import type { Locale } from "@/lib/i18n/config";
+import { getCvData } from "@/lib/i18n/cv-data";
 import Image from "next/image";
-import { cvMeta } from "@/lib/cv-data";
 
-export function CvHeader() {
+type CvHeaderProps = {
+  locale: Locale;
+};
+
+export function CvHeader({ locale }: CvHeaderProps) {
+  const { meta } = getCvData(locale);
+
   return (
     <header className="header">
       <div className="photo-frame">
@@ -15,17 +22,17 @@ export function CvHeader() {
         />
       </div>
       <div className="header-content">
-        <p className="eyebrow">{cvMeta.eyebrow}</p>
+        <p className="eyebrow">{meta.eyebrow}</p>
         <h1 className="name">
           Filip <span className="last">Hájek</span>
         </h1>
-        <div className="subtitle">{cvMeta.subtitle}</div>
+        <div className="subtitle">{meta.subtitle}</div>
         <div className="header-meta">
-          <span className="header-meta-item">{cvMeta.email}</span>
+          <span className="header-meta-item">{meta.email}</span>
           <span className="header-meta-item">
-            <a href={cvMeta.linkedIn}>{cvMeta.linkedInLabel}</a>
+            <a href={meta.linkedIn}>{meta.linkedInLabel}</a>
           </span>
-          <span className="header-meta-item">{cvMeta.location}</span>
+          <span className="header-meta-item">{meta.location}</span>
         </div>
       </div>
     </header>

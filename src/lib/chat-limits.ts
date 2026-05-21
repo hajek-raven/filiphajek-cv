@@ -1,4 +1,6 @@
 import type { UIMessage } from "ai";
+import type { Locale } from "./i18n/config";
+import { getUiCopy } from "./i18n/ui";
 
 export const CHAT_LIMITS = {
   /** Max user turns per conversation (portfolio demo / abuse protection). */
@@ -9,10 +11,13 @@ export const CHAT_LIMITS = {
   maxContextMessages: 40,
 } as const;
 
-export const CHAT_LIMIT_COPY = {
-  messageTooLong: `Zpráva je příliš dlouhá (max. ${CHAT_LIMITS.maxMessageChars} znaků).`,
-  conversationLimit: `Dosáhli jste limitu ${CHAT_LIMITS.maxUserMessages} zpráv v této konverzaci. Obnovte stránku pro nový chat.`,
-} as const;
+export function getChatLimitCopy(locale: Locale = "cs") {
+  const copy = getUiCopy(locale).chatLimits;
+  return {
+    messageTooLong: copy.messageTooLong(CHAT_LIMITS.maxMessageChars),
+    conversationLimit: copy.conversationLimit(CHAT_LIMITS.maxUserMessages),
+  } as const;
+}
 
 export function countUserMessages(messages: UIMessage[]): number {
   return messages.filter((message) => message.role === "user").length;
@@ -45,11 +50,15 @@ export function trimMessagesForContext(messages: UIMessage[]): UIMessage[] {
 
 export type ChatLimitErrorCode = "MESSAGE_TOO_LONG" | "CONVERSATION_LIMIT";
 
-export function chatLimitErrorResponse(code: ChatLimitErrorCode): Response {
+export function chatLimitErrorResponse(
+  code: ChatLimitErrorCode,
+  locale: Locale = "cs",
+): Response {
+  const copy = getChatLimitCopy(locale);
   const message =
     code === "MESSAGE_TOO_LONG"
-      ? CHAT_LIMIT_COPY.messageTooLong
-      : CHAT_LIMIT_COPY.conversationLimit;
+      ? copy.messageTooLong
+      : copy.conversationLimit;
 
   return Response.json({ error: code, message }, { status: 429 });
 }

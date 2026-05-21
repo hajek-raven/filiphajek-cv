@@ -1,15 +1,22 @@
-import { experience, olderRoles, profileParagraphs } from "@/lib/cv-data";
+import type { Locale } from "@/lib/i18n/config";
+import { getCvData } from "@/lib/i18n/cv-data";
 import { RichText } from "./rich-text";
 import { Tag } from "./tag";
 
-export function CvContent() {
+type CvContentProps = {
+  locale: Locale;
+};
+
+export function CvContent({ locale }: CvContentProps) {
+  const { profileParagraphs, experience, olderRoles, sections } =
+    getCvData(locale);
   const profile = profileParagraphs[0];
 
   return (
     <main className="content">
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">Profil</h2>
+          <h2 className="section-title">{sections.profile}</h2>
         </div>
         <div className="profile-text">
           {profile.text}
@@ -24,7 +31,7 @@ export function CvContent() {
 
       <section className="section">
         <div className="section-header">
-          <h2 className="section-title">Pracovní zkušenosti</h2>
+          <h2 className="section-title">{sections.experience}</h2>
         </div>
 
         {experience.map((role) => (
@@ -47,7 +54,7 @@ export function CvContent() {
                 ))}
               </ul>
               <div className="role-tech">
-                <span className="tech-label">Stack</span>
+                <span className="tech-label">{sections.stack}</span>
                 {role.tech.map((tech) => (
                   <Tag key={tech}>{tech}</Tag>
                 ))}
@@ -57,7 +64,7 @@ export function CvContent() {
         ))}
 
         <div className="older">
-          <div className="older-title">Dříve</div>
+          <div className="older-title">{sections.previously}</div>
           {olderRoles.map((role) => (
             <div className="older-item" key={role.company}>
               <strong>{role.company}</strong> · {role.position} ·{" "}

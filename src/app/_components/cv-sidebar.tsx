@@ -1,17 +1,25 @@
-import {
-  certifications,
-  education,
-  highlights,
-  languages,
-  stackGroups,
-} from "@/lib/cv-data";
+import type { Locale } from "@/lib/i18n/config";
+import { getCvData } from "@/lib/i18n/cv-data";
 import { Tag } from "./tag";
 
-export function CvSidebar() {
+type CvSidebarProps = {
+  locale: Locale;
+};
+
+export function CvSidebar({ locale }: CvSidebarProps) {
+  const {
+    stackGroups,
+    education,
+    languages,
+    certifications,
+    highlights,
+    sections,
+  } = getCvData(locale);
+
   return (
     <aside className="sidebar">
       <div className="sidebar-section sidebar-section--stack">
-        <div className="sidebar-title">Stack</div>
+        <div className="sidebar-title">{sections.stack}</div>
         {stackGroups.map((group) => (
           <div className="stack-group" key={group.label}>
             <div className="stack-group-label">{group.label}</div>
@@ -28,7 +36,7 @@ export function CvSidebar() {
 
       <div className="sidebar-meta">
         <div className="sidebar-section sidebar-section--education">
-          <div className="sidebar-title">Vzdělání</div>
+          <div className="sidebar-title">{sections.education}</div>
           <ul className="meta-list">
             {education.map((item) => (
               <li key={item.period}>
@@ -45,7 +53,7 @@ export function CvSidebar() {
         </div>
 
         <div className="sidebar-section sidebar-section--languages">
-          <div className="sidebar-title">Jazyky</div>
+          <div className="sidebar-title">{sections.languages}</div>
           <ul className="meta-list">
             {languages.map((lang) => (
               <li key={lang.name}>
@@ -57,7 +65,7 @@ export function CvSidebar() {
         </div>
 
         <div className="sidebar-section sidebar-section--certs">
-          <div className="sidebar-title">Certifikace</div>
+          <div className="sidebar-title">{sections.certifications}</div>
           <ul className="meta-list">
             {certifications.map((cert) => (
               <li key={cert.name}>
@@ -69,7 +77,7 @@ export function CvSidebar() {
       </div>
 
       <div className="sidebar-section highlights sidebar-section--highlights">
-        <div className="sidebar-title">V kostce</div>
+        <div className="sidebar-title">{sections.highlights}</div>
         <div className="stats-grid">
           {highlights.map((item) => (
             <div className="highlight-item" key={item.label}>

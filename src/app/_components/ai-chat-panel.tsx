@@ -25,28 +25,36 @@ import {
   isFetchUrlToolPart,
 } from "@/app/_components/fetch-url-tool-status";
 import {
-  CHAT_LIMIT_COPY,
   CHAT_LIMITS,
   countUserMessages,
+  getChatLimitCopy,
 } from "@/lib/chat-limits";
+import type { Locale } from "@/lib/i18n/config";
+import { getUiCopy } from "@/lib/i18n/ui";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import Image from "next/image";
 import { useCallback, useMemo, useState } from "react";
 
-const suggestions = [
-  "Shrň mi jaké má Filip technologické zkušenosti.",
-  "Hodí se Filip k nám do firmy? Přiložím odkaz",
-];
-
 const chatGutter = "px-8 max-md:px-4";
 
-export function AiChatPanel() {
+type AiChatPanelProps = {
+  locale: Locale;
+};
+
+export function AiChatPanel({ locale }: AiChatPanelProps) {
+  const ui = getUiCopy(locale);
+  const limitCopy = getChatLimitCopy(locale);
   const [input, setInput] = useState("");
   const [limitNotice, setLimitNotice] = useState<string | null>(null);
   const { messages, sendMessage, status, stop } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/chat" }),
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      prepareSendMessagesRequest: ({ messages: chatMessages }) => ({
+        body: { messages: chatMessages, locale },
+      }),
+    }),
     onError: (error) => {
       setLimitNotice(error.message);
     },
@@ -54,7 +62,7 @@ export function AiChatPanel() {
 
   const userMessageCount = useMemo(
     () => countUserMessages(messages),
-    [messages]
+    [messages],
   );
   const atConversationLimit =
     userMessageCount >= CHAT_LIMITS.maxUserMessages;
@@ -70,9 +78,9 @@ export function AiChatPanel() {
       const text = message.text.trim();
       if (!text || !canSend) {
         if (atConversationLimit) {
-          setLimitNotice(CHAT_LIMIT_COPY.conversationLimit);
+          setLimitNotice(limitCopy.conversationLimit);
         } else if (text.length > CHAT_LIMITS.maxMessageChars) {
-          setLimitNotice(CHAT_LIMIT_COPY.messageTooLong);
+          setLimitNotice(limitCopy.messageTooLong);
         }
         return;
       }
@@ -81,20 +89,20 @@ export function AiChatPanel() {
       sendMessage({ text });
       setInput("");
     },
-    [atConversationLimit, canSend, sendMessage]
+    [atConversationLimit, canSend, limitCopy, sendMessage],
   );
 
   const handleSuggestion = useCallback(
     (suggestion: string) => {
       if (!canSend || atConversationLimit) {
-        setLimitNotice(CHAT_LIMIT_COPY.conversationLimit);
+        setLimitNotice(limitCopy.conversationLimit);
         return;
       }
 
       setLimitNotice(null);
       sendMessage({ text: suggestion });
     },
-    [atConversationLimit, canSend, sendMessage]
+    [atConversationLimit, canSend, limitCopy.conversationLimit, sendMessage],
   );
 
   const hasMessages = messages.length > 0;
@@ -105,7 +113,7 @@ export function AiChatPanel() {
       <header
         className={cn(
           "shrink-0 border-border border-b bg-[color-mix(in_srgb,var(--background)_88%,var(--muted))] pt-8 pb-5 max-md:pt-5 max-md:pb-3",
-          chatGutter
+          chatGutter,
         )}
       >
         <div className="flex items-center gap-5 max-md:items-start max-md:gap-3">
@@ -119,10 +127,10 @@ export function AiChatPanel() {
           />
           <div className="min-w-0">
             <h1 className="mb-2 text-[1.3125rem] leading-tight font-medium tracking-[-0.02em] text-foreground max-md:text-lg">
-              AI asistent Filipa
+              {ui.chat.title}
             </h1>
             <p className="max-w-[32em] text-[0.8125rem] leading-[1.55] text-muted-foreground">
-              Odpovídám z obsahu CV. Umím načíst i JavaScriptové stránky (např. inzeráty).
+              {ui.chat.subtitle}
             </p>
           </div>
         </div>
@@ -133,13 +141,13 @@ export function AiChatPanel() {
           className={cn(
             "min-h-full flex-col gap-4 pt-5 pb-6 max-md:gap-2.5 max-md:pt-3 max-md:pb-4",
             chatGutter,
-            hasMessages ? "justify-end" : "justify-center"
+            hasMessages ? "justify-end" : "justify-center",
           )}
         >
           {!hasMessages ? (
             <ConversationEmptyState className="px-2 py-6 max-md:py-4">
               <p className="max-w-[22em] text-center text-[0.9375rem] leading-snug font-medium text-foreground">
-                Dobrý den, zeptejte se mě na cokoli
+                {ui.chat.emptyState}
               </p>
             </ConversationEmptyState>
           ) : (
@@ -147,7 +155,7 @@ export function AiChatPanel() {
               <div
                 className={cn(
                   "flex w-full items-start gap-2.5",
-                  message.role === "user" && "justify-end"
+                  message.role === "user" && "justify-end",
                 )}
                 key={message.id}
               >
@@ -164,9 +172,10 @@ export function AiChatPanel() {
                 <Message
                   className={cn(
                     "min-w-0 max-w-[min(100%,680px)]",
-                    message.role === "assistant" && "w-full max-w-[min(100%,680px)]",
+                    message.role === "assistant" &&
+                      "w-full max-w-[min(100%,680px)]",
                     message.role === "user" &&
-                      "max-w-[min(88%,560px)] max-md:max-w-[94%]"
+                      "max-w-[min(88%,560px)] max-md:max-w-[94%]",
                   )}
                   from={message.role}
                 >
@@ -199,6 +208,7 @@ export function AiChatPanel() {
                         return (
                           <FetchUrlToolStatus
                             key={`${message.id}-${index}`}
+                            locale={locale}
                             part={part}
                           />
                         );
@@ -218,12 +228,12 @@ export function AiChatPanel() {
       <footer
         className={cn(
           "relative grid shrink-0 gap-3 border-border border-t bg-[color-mix(in_srgb,var(--background)_92%,var(--muted))] pt-5 pb-6 max-md:gap-2.5 max-md:pt-3 max-md:pb-4",
-          chatGutter
+          chatGutter,
         )}
       >
         {!atConversationLimit ? (
           <Suggestions className="gap-1.5 [mask-image:linear-gradient(to_right,transparent,black_16px,black_calc(100%-16px),transparent)]">
-            {suggestions.map((suggestion) => (
+            {ui.chat.suggestions.map((suggestion) => (
               <Suggestion
                 className="h-7 shrink-0 rounded-full border-border/80 bg-background/95 px-3 text-xs leading-none font-normal whitespace-nowrap shadow-[0_2px_10px_rgba(1,18,25,0.08),0_1px_2px_rgba(1,18,25,0.04)] backdrop-blur-sm transition-[box-shadow,background-color,border-color,color] hover:border-[color-mix(in_srgb,var(--ring)_45%,var(--border))] hover:bg-background hover:text-[var(--accent)] hover:shadow-[0_4px_16px_rgba(1,18,25,0.12)]"
                 disabled={!canSend}
@@ -243,18 +253,12 @@ export function AiChatPanel() {
           >
             {limitNotice ??
               (atConversationLimit
-                ? CHAT_LIMIT_COPY.conversationLimit
-                : CHAT_LIMIT_COPY.messageTooLong)}
+                ? limitCopy.conversationLimit
+                : limitCopy.messageTooLong)}
           </p>
         ) : remainingMessages <= 5 ? (
           <p className="text-[0.75rem] leading-snug text-muted-foreground">
-            Zbývá {remainingMessages}{" "}
-            {remainingMessages === 1
-              ? "zpráva"
-              : remainingMessages >= 2 && remainingMessages <= 4
-                ? "zprávy"
-                : "zpráv"}
-            .
+            {ui.chat.remainingMessages(remainingMessages)}
           </p>
         ) : null}
 
@@ -269,14 +273,17 @@ export function AiChatPanel() {
               maxLength={CHAT_LIMITS.maxMessageChars}
               onChange={(event) => {
                 setInput(event.target.value);
-                if (limitNotice && event.target.value.length <= CHAT_LIMITS.maxMessageChars) {
+                if (
+                  limitNotice &&
+                  event.target.value.length <= CHAT_LIMITS.maxMessageChars
+                ) {
                   setLimitNotice(null);
                 }
               }}
               placeholder={
                 atConversationLimit
-                  ? "Limit zpráv dosažen"
-                  : "Napište otázku…"
+                  ? ui.chat.placeholderLimit
+                  : ui.chat.placeholder
               }
               value={input}
             />
