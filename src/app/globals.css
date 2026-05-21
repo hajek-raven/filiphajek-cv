@@ -54,6 +54,26 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-nav-fab-attention: nav-fab-attention 2.6s ease-in-out infinite;
+}
+
+@keyframes nav-fab-attention {
+  0%,
+  100% {
+    box-shadow:
+      0 1px 2px rgba(9, 41, 81, 0.18),
+      0 8px 24px rgba(9, 41, 81, 0.16),
+      0 0 0 0 rgba(69, 133, 205, 0);
+    transform: translateY(0);
+  }
+
+  50% {
+    box-shadow:
+      0 2px 6px rgba(9, 41, 81, 0.22),
+      0 10px 28px rgba(9, 41, 81, 0.18),
+      0 0 0 5px rgba(69, 133, 205, 0.22);
+    transform: translateY(-1px);
+  }
 }
 
 .ai-mode {
@@ -961,11 +981,6 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-  .nav-actions {
-    top: var(--space-4);
-    right: var(--space-4);
-  }
-
   body {
     padding: 0;
     background: var(--paper);
@@ -1236,83 +1251,4 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-}
-
-/* Navigation — floating link between CV and AI chat */
-.nav-actions {
-  position: fixed;
-  top: var(--space-7);
-  right: var(--space-4);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.nav-fab {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--paper);
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow:
-    0 1px 2px rgba(9, 41, 81, 0.18),
-    0 8px 24px rgba(9, 41, 81, 0.16);
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-}
-
-.nav-fab:hover {
-  color: var(--paper);
-  background: var(--accent-muted);
-  border-color: var(--accent-muted);
-  transform: translateY(-1px);
-}
-
-@keyframes nav-fab-attention {
-  0%,
-  100% {
-    box-shadow:
-      0 1px 2px rgba(9, 41, 81, 0.18),
-      0 8px 24px rgba(9, 41, 81, 0.16),
-      0 0 0 0 rgba(69, 133, 205, 0);
-    transform: translateY(0);
-  }
-
-  50% {
-    box-shadow:
-      0 2px 6px rgba(9, 41, 81, 0.22),
-      0 10px 28px rgba(9, 41, 81, 0.18),
-      0 0 0 5px rgba(69, 133, 205, 0.22);
-    transform: translateY(-1px);
-  }
-}
-
-.nav-fab--promo {
-  animation: nav-fab-attention 2.6s ease-in-out infinite;
-}
-
-.nav-fab--promo:hover {
-  animation: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nav-fab--promo {
-    animation: none;
-  }
-}
-
-@media print {
-  .nav-actions {
-    display: none !important;
-  }
 }

@@ -1,56 +1,31 @@
-import { existsSync } from "node:fs";
-import chromium from "@sparticuz/chromium-min";
 import puppeteer, { type Browser } from "puppeteer-core";
-
-const CHROMIUM_PACK_URL =
-  "https://github.com/Sparticuz/chromium/releases/download/v148.0.0/chromium-v148.0.0-pack.x64.tar";
 
 const BROWSER_TIMEOUT_MS = 20_000;
 const MAX_TEXT_LENGTH = 12_000;
+const DEFAULT_BROWSERLESS_HOST = "production-sfo.browserless.io";
 
-const LOCAL_CHROME_CANDIDATES = [
-  process.env.CHROME_EXECUTABLE_PATH,
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "/Applications/Chromium.app/Contents/MacOS/Chromium",
-  "/usr/bin/google-chrome",
-  "/usr/bin/chromium",
-  "/usr/bin/chromium-browser",
-].filter(Boolean) as string[];
+function getBrowserlessEndpoint(): string {
+  if (process.env.BROWSERLESS_WS_ENDPOINT) {
+    return process.env.BROWSERLESS_WS_ENDPOINT;
+  }
 
-function getLocalChromePath(): string | undefined {
-  return LOCAL_CHROME_CANDIDATES.find((path) => existsSync(path));
-}
+  const token = process.env.BROWSERLESS_TOKEN;
+  if (!token) {
+    throw new Error(
+      "Browser rendering is not configured. Set BROWSERLESS_TOKEN or BROWSERLESS_WS_ENDPOINT.",
+    );
+  }
 
-function isServerlessRuntime(): boolean {
-  return Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+  const rawBase = process.env.BROWSERLESS_URL ?? DEFAULT_BROWSERLESS_HOST;
+  const base = rawBase.startsWith("ws") ? rawBase : `wss://${rawBase}`;
+  const endpoint = new URL(base);
+  endpoint.searchParams.set("token", token);
+
+  return endpoint.toString();
 }
 
 async function launchBrowser(): Promise<Browser> {
-  const localChromePath = getLocalChromePath();
-
-  if (localChromePath && !isServerlessRuntime()) {
-    return puppeteer.launch({
-      executablePath: localChromePath,
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-    });
-  }
-
-  chromium.setGraphicsMode = false;
-
-  return puppeteer.launch({
-    args: await puppeteer.defaultArgs({ args: chromium.args, headless: "shell" }),
-    defaultViewport: {
-      deviceScaleFactor: 1,
-      hasTouch: false,
-      height: 1080,
-      isLandscape: true,
-      isMobile: false,
-      width: 1280,
-    },
-    executablePath: await chromium.executablePath(CHROMIUM_PACK_URL),
-    headless: "shell",
-  });
+  return puppeteer.connect({ browserWSEndpoint: getBrowserlessEndpoint() });
 }
 
 function normalizeText(text: string): string {
