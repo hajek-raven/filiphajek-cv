@@ -1,9 +1,6 @@
+import { renderPageText } from "@/lib/browser/render-page";
 import { tool } from "ai";
 import { z } from "zod";
-
-const MAX_BYTES = 1_000_000;
-const MAX_TEXT_LENGTH = 12_000;
-const FETCH_TIMEOUT_MS = 12_000;
 
 const blockedHostnames = new Set([
   "localhost",
@@ -34,7 +31,7 @@ function isPrivateIpv4(hostname: string): boolean {
   );
 }
 
-function assertFetchableUrl(rawUrl: string): URL {
+function assertFetchableUrl(rawUrl: string): string {
   let parsed: URL;
 
   try {
@@ -58,107 +55,16 @@ function assertFetchableUrl(rawUrl: string): URL {
     throw new Error("Tato URL adresa není povolena.");
   }
 
-  return parsed;
-}
-
-function decodeHtmlEntities(text: string): string {
-  return text
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
-}
-
-function htmlToText(html: string): string {
-  const withoutNoise = html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ");
-
-  const withBreaks = withoutNoise
-    .replace(/<\/(p|div|h[1-6]|li|br|tr|section|article|header|footer)>/gi, "\n")
-    .replace(/<(br|hr)\s*\/?>/gi, "\n");
-
-  const text = decodeHtmlEntities(withBreaks.replace(/<[^>]+>/g, " "))
-    .replace(/\r/g, "")
-    .replace(/[ \t]+\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .replace(/[ \t]{2,}/g, " ")
-    .trim();
-
-  return text;
-}
-
-function extractTitle(html: string): string | null {
-  const match = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-  if (!match?.[1]) {
-    return null;
-  }
-
-  return decodeHtmlEntities(match[1].replace(/<[^>]+>/g, " ").trim()) || null;
+  return parsed.toString();
 }
 
 export async function fetchPageContent(rawUrl: string) {
-  const url = assertFetchableUrl(rawUrl);
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-
-  try {
-    const response = await fetch(url.toString(), {
-      signal: controller.signal,
-      headers: {
-        Accept: "text/html,application/xhtml+xml,text/plain;q=0.9,*/*;q=0.8",
-        "User-Agent": "filiphajek-cv-bot/1.0",
-      },
-      redirect: "follow",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Server vrátil stav ${response.status}.`);
-    }
-
-    const contentType = response.headers.get("content-type") ?? "";
-    const buffer = await response.arrayBuffer();
-
-    if (buffer.byteLength > MAX_BYTES) {
-      throw new Error("Stránka je příliš velká pro načtení.");
-    }
-
-    const body = new TextDecoder("utf-8", { fatal: false }).decode(buffer);
-    const title = contentType.includes("html") ? extractTitle(body) : null;
-    const text = contentType.includes("html") ? htmlToText(body) : body.trim();
-
-    if (!text) {
-      throw new Error("Stránka neobsahuje textový obsah.");
-    }
-
-    const truncated = text.length > MAX_TEXT_LENGTH;
-
-    return {
-      url: url.toString(),
-      title,
-      contentType,
-      content: truncated ? `${text.slice(0, MAX_TEXT_LENGTH)}…` : text,
-      truncated,
-      length: text.length,
-    };
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
-      throw new Error("Načtení stránky vypršelo.");
-    }
-
-    throw error instanceof Error ? error : new Error("Nepodařilo se načíst stránku.");
-  } finally {
-    clearTimeout(timeout);
-  }
+  return renderPageText(assertFetchableUrl(rawUrl));
 }
 
 export const fetchUrlTool = tool({
   description:
-    "Načte veřejnou webovou stránku z URL a vrátí její textový obsah. Použij, když uživatel pošle odkaz nebo chce informace z konkrétní stránky.",
+    "Načte veřejnou webovou stránku z URL v headless prohlížeči a vrátí její textový obsah. Použij, když uživatel pošle odkaz nebo chce informace z konkrétní stránky.",
   inputSchema: z.object({
     url: z.url().describe("Plná URL stránky včetně https://"),
   }),

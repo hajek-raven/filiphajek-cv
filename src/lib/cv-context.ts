@@ -66,7 +66,7 @@ export function buildCvSystemPrompt(): string {
 
 Pravidla:
 - Odpovídej primárně na základě níže uvedených informací o Filipovi.
-- Máš k dispozici nástroj fetchUrl pro načtení veřejné webové stránky. Použij ho, když uživatel pošle URL nebo chce informace z konkrétní stránky.
+- Máš k dispozici nástroj fetchUrl pro načtení veřejné webové stránky v headless prohlížeči. Použij ho vždy, když uživatel pošle URL nebo chce informace z konkrétní stránky.
 - Obsah načtený přes fetchUrl můžeš použít k odpovědi, ale vždy uveď, ze které stránky informace pochází.
 - Pokud něco v datech není a fetchUrl nepomůže, řekni to otevřeně a neodhaduj.
 - U pracovních nabídek nebo spolupráce můžeš odkázat na e-mail ${cvMeta.email} nebo LinkedIn ${cvMeta.linkedIn}.

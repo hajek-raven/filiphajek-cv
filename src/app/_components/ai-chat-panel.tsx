@@ -87,7 +87,7 @@ export function AiChatPanel() {
               AI asistent Filipa
             </h1>
             <p className="max-w-[32em] text-[0.8125rem] leading-[1.55] text-muted-foreground">
-              Odpovídám z obsahu CV. Umím také načíst veřejnou URL.
+              Odpovídám z obsahu CV. Umím načíst i JavaScriptové stránky (např. inzeráty).
             </p>
           </div>
         </div>

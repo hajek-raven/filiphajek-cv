@@ -63,6 +63,7 @@ export function FetchUrlToolStatus({ part }: { part: FetchUrlToolPart }) {
       title?: string | null;
       url?: string;
       truncated?: boolean;
+      method?: "fetch" | "browser";
     };
 
     return (
@@ -74,7 +75,7 @@ export function FetchUrlToolStatus({ part }: { part: FetchUrlToolPart }) {
       >
         <GlobeIcon aria-hidden className={iconClassName} />
         <div className="min-w-0">
-          <p className={labelClassName}>Stránka načtena</p>
+          <p className={labelClassName}>Stránka načtena v prohlížeči</p>
           <p className="text-[0.8125rem] leading-snug break-words text-foreground">
             {output.title ?? output.url ?? url}
           </p>
@@ -95,7 +96,7 @@ export function FetchUrlToolStatus({ part }: { part: FetchUrlToolPart }) {
         className={cn(iconClassName, "animate-spin")}
       />
       <div className="min-w-0">
-        <p className={labelClassName}>Načítám stránku…</p>
+        <p className={labelClassName}>Načítám stránku v prohlížeči…</p>
         {url ? (
           <p className="text-[0.8125rem] leading-snug break-words text-foreground">
             {url}

@@ -323,11 +323,21 @@ export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 
 const streamdownPlugins = { cjk, code, math, mermaid };
 
+const chatMarkdownHeadingStyles = [
+  "[&_[data-streamdown=heading-1]]:mt-4 [&_[data-streamdown=heading-1]]:mb-2 [&_[data-streamdown=heading-1]]:text-[22px] [&_[data-streamdown=heading-1]]:font-semibold",
+  "[&_[data-streamdown=heading-2]]:mt-3.5 [&_[data-streamdown=heading-2]]:mb-1.5 [&_[data-streamdown=heading-2]]:text-[20px] [&_[data-streamdown=heading-2]]:font-semibold",
+  "[&_[data-streamdown=heading-3]]:mt-3 [&_[data-streamdown=heading-3]]:mb-1 [&_[data-streamdown=heading-3]]:text-[18px] [&_[data-streamdown=heading-3]]:font-semibold",
+  "[&_[data-streamdown=heading-4]]:mt-2.5 [&_[data-streamdown=heading-4]]:mb-1 [&_[data-streamdown=heading-4]]:text-[0.9375rem] [&_[data-streamdown=heading-4]]:font-semibold",
+  "[&_[data-streamdown=heading-5]]:mt-2 [&_[data-streamdown=heading-5]]:mb-0.5 [&_[data-streamdown=heading-5]]:text-[0.9375rem] [&_[data-streamdown=heading-5]]:font-medium",
+  "[&_[data-streamdown=heading-6]]:mt-2 [&_[data-streamdown=heading-6]]:mb-0.5 [&_[data-streamdown=heading-6]]:text-[0.875rem] [&_[data-streamdown=heading-6]]:font-medium",
+] as const;
+
 export const MessageResponse = memo(
   ({ className, ...props }: MessageResponseProps) => (
     <Streamdown
       className={cn(
         "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+        chatMarkdownHeadingStyles,
         className
       )}
       plugins={streamdownPlugins}
