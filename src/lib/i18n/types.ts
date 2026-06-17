@@ -6,6 +6,8 @@ export type ProfileParagraph = {
   textAfterStrong2?: string;
   strong3?: string;
   textEnd?: string;
+  strong4?: string;
+  textAfterStrong4?: string;
 };
 
 export type ExperienceRole = {

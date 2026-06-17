@@ -2,30 +2,39 @@ import type { CvData } from "../types";
 
 export const cvDataEn: CvData = {
   meta: {
-    title: "Filip Hájek — Lead Fullstack Engineer",
+    title: "Filip Hájek — AI Product Engineer",
     description:
-      "Lead Fullstack Engineer · TypeScript · React. CV of Filip Hájek.",
+      "AI Product Engineer · Agentic Systems · TypeScript. CV of Filip Hájek.",
     email: "hajek.raven@gmail.com",
     linkedIn: "https://www.linkedin.com/in/hajekfi",
     linkedInLabel: "linkedin.com/in/hajekfi",
     location: "Prague",
-    eyebrow: "Prague · Lead Fullstack",
-    subtitle: "Lead Fullstack Engineer  ·  TypeScript  ·  React",
+    eyebrow: "Prague · AI Product Engineering",
+    subtitle: "AI Product Engineer  ·  Lead Fullstack  ·  Agentic Systems",
     footerYear: 2026,
   },
   stackGroups: [
     {
-      label: "Core",
+      label: "AI & Agents",
       tags: [
-        { name: "TypeScript", primary: true },
-        { name: "React", primary: true },
-        { name: "Next.js", primary: true },
-        { name: "Node.js", primary: true },
+        { name: "Vercel AI SDK", primary: true },
+        { name: "Agentic systems", primary: true },
+        { name: "Tool calling" },
+        { name: "LLM orchestration" },
+        { name: "Streaming" },
+        { name: "Voice AI" },
+        { name: "Cursor" },
+        { name: "Agentic coding" },
       ],
     },
     {
-      label: "UI & styling",
-      tags: [{ name: "Tailwind CSS" }, { name: "SASS" }],
+      label: "Core engineering",
+      tags: [
+        { name: "TypeScript", primary: true },
+        { name: "Next.js", primary: true },
+        { name: "React", primary: true },
+        { name: "Node.js", primary: true },
+      ],
     },
     {
       label: "Data & API",
@@ -38,12 +47,14 @@ export const cvDataEn: CvData = {
       ],
     },
     {
-      label: "Infra",
+      label: "Delivery",
       tags: [
         { name: "Docker" },
         { name: "Linux" },
         { name: "CI/CD" },
-        { name: "AI SDK" },
+        { name: "Monitoring" },
+        { name: "Product ownership" },
+        { name: "Tailwind CSS" },
       ],
     },
   ],
@@ -71,9 +82,9 @@ export const cvDataEn: CvData = {
       label: "years building web applications",
     },
     {
-      value: "30",
-      unit: "+",
-      label: "projects delivered under my leadership, 10 truly large-scale",
+      value: "Several",
+      unit: "",
+      label: "larger production systems delivered end to end",
     },
     {
       value: "4",
@@ -83,14 +94,19 @@ export const cvDataEn: CvData = {
   ],
   profileParagraphs: [
     {
-      text: "Fullstack engineer with 10+ years of experience; for nearly the last 4 years I led my own development agency ",
-      strong: "FIRE Systems",
-      textAfterStrong: ". At ",
-      strong2: "EPAM",
-      textAfterStrong2: " I spent 2 years building a ",
-      strong3: "wealth management application for a major Swiss bank",
+      text: "",
+      strong: "AI Product / Fullstack Engineer",
+      textAfterStrong:
+        " with 10+ years of experience in TypeScript, React, Next.js and Node.js. I build ",
+      strong2: "production AI systems",
+      textAfterStrong2:
+        ": voice assistants, agentic workflows, tool calling, LLM orchestration, streaming and backend integrations.",
+    },
+    {
+      text: "Over the past 4 years, I led my own software delivery company and shipped several larger production systems, including an AI hotline, data platforms, manufacturing software and internal business applications. ",
+      strong3: "I work in Cursor daily",
       textEnd:
-        ", so regulated fintech environments, auditability, and security are familiar territory. I've built several larger systems from an empty repository — choosing the stack and defending technical decisions is my daily mode.",
+        " and use agentic coding for prototyping, refactoring, debugging, testing and review, while keeping architecture, security and code quality under my responsibility.",
     },
   ],
   experience: [
@@ -99,10 +115,12 @@ export const cvDataEn: CvData = {
       end: "04/2026",
       location: "Prague",
       company: "FIRE Systems",
-      position: "Founder  ·  Fullstack & Product Engineer",
+      position: "Founder  ·  AI Product & Fullstack Engineer",
       bullets: [
         "Led a small development agency, delivering custom systems from design through production, with client accountability and technical decision-making.",
-        "**AI hotline for a Prague ISP**: voice AI with backend logic orchestration, integrations, and real-world operation beyond a classic web app.",
+        "**AI development**: building production agentic systems and voice assistants on top of the **Vercel AI SDK** — LLM orchestration, tool calling, streaming, integrations, and wiring into a production backend.",
+        "**AI hotline for a Prague ISP**: a voice assistant with backend logic orchestration, integrations, and real-world operation beyond a classic web app.",
+        "**Agentic coding in Cursor**: daily development with AI assistants for faster prototyping, refactoring, debugging, testing and code review without losing engineering control.",
         "**Data platform scraping 50+ million records**, change detection, automation, monitoring, alerting, and fault tolerance.",
         "Several larger enterprise applications, manufacturing software, and internal tools with non-trivial data models and admin interfaces.",
       ],
@@ -110,7 +128,12 @@ export const cvDataEn: CvData = {
         "TypeScript",
         "Next.js",
         "Node.js",
-        "AI SDK",
+        "Vercel AI SDK",
+        "Agentic systems",
+        "Tool calling",
+        "Voice AI",
+        "Cursor",
+        "Agentic coding",
         "PostgreSQL",
         "Drizzle ORM",
         "React",

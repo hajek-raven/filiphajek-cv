@@ -10,7 +10,6 @@ type CvContentProps = {
 export function CvContent({ locale }: CvContentProps) {
   const { profileParagraphs, experience, olderRoles, sections } =
     getCvData(locale);
-  const profile = profileParagraphs[0];
 
   return (
     <main className="content">
@@ -19,13 +18,22 @@ export function CvContent({ locale }: CvContentProps) {
           <h2 className="section-title">{sections.profile}</h2>
         </div>
         <div className="profile-text">
-          {profile.text}
-          <strong>{profile.strong}</strong>
-          {profile.textAfterStrong}
-          <strong>{profile.strong2}</strong>
-          {profile.textAfterStrong2}
-          <strong>{profile.strong3}</strong>
-          {profile.textEnd}
+          {profileParagraphs.map((profile) => (
+            <p
+              className="profile-paragraph"
+              key={`${profile.strong}-${profile.textAfterStrong}`}
+            >
+              {profile.text}
+              <strong>{profile.strong}</strong>
+              {profile.textAfterStrong}
+              <strong>{profile.strong2}</strong>
+              {profile.textAfterStrong2}
+              <strong>{profile.strong3}</strong>
+              {profile.textEnd}
+              <strong>{profile.strong4}</strong>
+              {profile.textAfterStrong4}
+            </p>
+          ))}
         </div>
       </section>
 
@@ -44,6 +52,9 @@ export function CvContent({ locale }: CvContentProps) {
             <div className="role-body">
               <div className="role-title">
                 <span className="role-company">{role.company}</span>
+              </div>
+              <div className="role-print-meta">
+                {role.start} — {role.end} · {role.location}
               </div>
               <div className="role-position">{role.position}</div>
               <ul>

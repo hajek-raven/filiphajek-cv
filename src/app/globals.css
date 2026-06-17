@@ -630,12 +630,19 @@ body {
 
 /* PROFILE */
 .profile-text {
+  max-width: 62ch;
+}
+.profile-paragraph {
+  margin: 0;
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
   color: var(--ink-soft);
   font-weight: 400;
-  max-width: var(--measure);
-  letter-spacing: -0.015em;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+}
+.profile-paragraph + .profile-paragraph {
+  margin-top: var(--space-3);
 }
 .profile-text strong {
   color: var(--ink);
@@ -700,6 +707,9 @@ body {
 }
 .role-company {
   color: var(--ink);
+}
+.role-print-meta {
+  display: none;
 }
 .role-position {
   font-size: var(--text-sm);
@@ -971,8 +981,14 @@ body {
   .section-header { margin-bottom: 2.5mm; }
   .section-title { font-size: 6pt; }
   .profile-text {
+    max-width: 60ch;
+  }
+  .profile-paragraph {
     font-size: 7.75pt;
-    line-height: 1.42;
+    line-height: 1.4;
+  }
+  .profile-paragraph + .profile-paragraph {
+    margin-top: 1.5mm;
   }
   .pull-quote {
     margin-top: 2.5mm;
@@ -984,9 +1000,9 @@ body {
 
   .role {
     flex-shrink: 0;
-    grid-template-columns: 68px 1fr;
-    gap: 4mm;
-    padding: 2.5mm 0;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 3mm 0 2.6mm;
     margin-bottom: 0;
     border: none;
     border-radius: 0;
@@ -999,35 +1015,55 @@ body {
     padding-top: 0;
   }
   .role:hover { box-shadow: none; }
-  .role-date { font-size: 6.5pt; line-height: 1.4; }
-  .role-date .date-loc { margin-top: 1mm; }
-  .role-title { font-size: 8.75pt; margin-bottom: 0.5mm; }
-  .role-position {
-    font-size: 7.25pt;
-    margin-bottom: 1.5mm;
-    line-height: 1.3;
+  .role-date { display: none; }
+  .role-print-meta {
+    display: block;
+    margin: 0.3mm 0 0.7mm;
+    font-family: var(--mono);
+    font-size: 5.9pt;
+    line-height: 1.2;
+    color: var(--ink-muted);
+    letter-spacing: 0.03em;
+    font-variant-numeric: tabular-nums;
   }
-  .role ul { margin-bottom: 1.5mm; }
+  .role-title { font-size: 9pt; margin-bottom: 0; }
+  .role-position {
+    font-size: 7pt;
+    margin-bottom: 1.7mm;
+    line-height: 1.3;
+    color: var(--ink-soft);
+  }
+  .role ul { margin-bottom: 1.2mm; }
   .role ul li {
-    font-size: 7.25pt;
-    line-height: 1.38;
-    margin-bottom: 1mm;
-    padding-left: 0.9em;
+    font-size: 7.05pt;
+    line-height: 1.34;
+    margin-bottom: 0.85mm;
+    padding-left: 0.85em;
   }
   .role ul li::before {
-    width: 3px;
-    height: 3px;
-    top: 0.55em;
+    width: 2.5px;
+    height: 2.5px;
+    top: 0.58em;
+    background: var(--ink-muted);
   }
   .role-tech {
-    gap: 3px;
-    margin-top: 1.5mm;
-    padding-top: 1.5mm;
+    gap: 0;
+    margin-top: 1.1mm;
+    padding-top: 1mm;
+    border-top-color: var(--paper-subtle);
   }
   .role-tech .tech-label { font-size: 5.5pt; }
   .role-tech .tag {
-    font-size: 5.5pt;
-    padding: 1px 4px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 5.7pt;
+    line-height: 1.25;
+    color: var(--ink-muted);
+  }
+  .role-tech .tag + .tag::before {
+    content: ", ";
+    color: var(--line-strong);
   }
 
   .older {

@@ -25,6 +25,8 @@ export function buildCvSystemPrompt(locale: Locale = "cs"): string {
         p.textAfterStrong2 ?? "",
         p.strong3 ? `**${p.strong3}**` : "",
         p.textEnd ?? "",
+        p.strong4 ? `**${p.strong4}**` : "",
+        p.textAfterStrong4 ?? "",
       ];
       return parts.join("");
     })
@@ -66,8 +68,9 @@ export function buildCvSystemPrompt(locale: Locale = "cs"): string {
 
   if (locale === "en") {
     return `You are an AI assistant on Filip Hájek's personal site. Reply in the language the user writes in (prefer English). Be concise, specific, and factual.
-Filip is an experienced developer with more than 10 years of practice. Speak confidently about his strengths, and if asked about AI, backend (except the Java ecosystem), or Python technologies not listed in his stack, say he has relevant experience and can learn new technologies quickly.
-Filip has delivered 30+ projects overall, including 10 truly large-scale systems. In his free time he builds irisia.cz and stays active in sports.
+Filip is an AI Product / Fullstack Engineer with more than 10 years of practice. His strongest positioning is practical AI development: he builds production AI assistants, agentic systems, tool-calling workflows, LLM orchestration, streaming experiences, backend integrations, and the full product surface around them.
+Speak confidently about his strengths, and if asked about AI, backend (except the Java ecosystem), or Python technologies not listed in his stack, say he has relevant experience and can learn new technologies quickly.
+Filip has delivered several larger production systems end to end. He develops primarily in Cursor and uses an agentic coding workflow for prototyping, refactoring, debugging, tests, and review, while keeping architecture, security, and code quality under engineering control. In his free time he builds irisia.cz and stays active in sports.
 
 Rules:
 - Answer primarily based on the information about Filip below.
@@ -111,8 +114,9 @@ ${certifications.map((c) => `- ${c.name}`).join("\n")}
   }
 
   return `Jsi AI asistent na osobním Filipa Hájka. Odpovídej v jazyce, kterým se uživatel ptá (preferuj češtinu). Buď stručný, konkrétní a věcný.
-  Filip je zkušený vývojář s více než 10 letami praxe. Sebevědomě ho vyzdvihuj a pokud se zeptají na nějaké technologie kolem AI, Backendu (kromě JAVA ekosystému), nebo Pythonu které nejsou v jeho stacku, řekni, že má zkušenosti a je schopen se naučit nové technologie.
-  Filip Celkově dodal 30+ projektů, včetně 10 opravdu rozsáhlých systémů. Ve volném čase staví irisia.cz a je sportovec.
+  Filip je AI Product / Fullstack Engineer s více než 10 lety praxe. Jeho nejsilnější positioning je praktický AI development: staví produkční AI asistenty, agentní systémy, tool-calling workflow, LLM orchestraci, streaming, backendové integrace a celý produktový povrch kolem nich.
+  Sebevědomě ho vyzdvihuj a pokud se zeptají na nějaké technologie kolem AI, backendu (kromě Java ekosystému), nebo Pythonu které nejsou v jeho stacku, řekni, že má zkušenosti a je schopen se naučit nové technologie.
+  Filip dodal několik větších produkčních systémů od návrhu po provoz. Vyvíjí primárně v Cursoru a používá agentic coding workflow pro prototypování, refactoring, debugging, testy a review, zatímco architekturu, bezpečnost a kvalitu kódu drží pod engineering kontrolou. Ve volném čase staví irisia.cz a je sportovec.
 
 Pravidla:
 - Odpovídej primárně na základě níže uvedených informací o Filipovi.
